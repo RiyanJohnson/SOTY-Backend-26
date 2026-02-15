@@ -7,9 +7,9 @@ const generateAccessToken = (user) => {
   return jwt.sign(
     { username: user.username, id: user._id, teamname: user.teamname },
     process.env.ACCESS_TOKEN_SECRET,
-    { 
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "45m" 
-    }
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "45m",
+    },
   );
 };
 
@@ -17,9 +17,9 @@ const generateRefreshToken = (user) => {
   return jwt.sign(
     { username: user.username, id: user._id },
     process.env.REFRESH_TOKEN_SECRET,
-    { 
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d" 
-    }
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d",
+    },
   );
 };
 
@@ -28,20 +28,16 @@ const registerUser = async (req, res) => {
     const { username, teamname, password, score } = req.body;
 
     if (!username || !teamname || !password) {
-      return res.status(400).json(
-        { 
-          message: "All fields are required"
-        }
-      );
+      return res.status(400).json({
+        message: "All fields are required",
+      });
     }
 
     const userExists = await UserModel.findOne({ username });
     if (userExists) {
-      return res.status(400).json(
-        { 
-          message: "User already exists"
-        }
-      );
+      return res.status(400).json({
+        message: "User already exists",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -66,31 +62,26 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
+    // console.log("Login request body:", req.body);
     const { username, password } = req.body;
     if (!username || !password) {
-      return res.status(400).json(
-        {
-          message: "Username and password required" 
-        }
-      );
+      return res.status(400).json({
+        message: "Username and password required",
+      });
     }
 
     const user = await UserModel.findOne({ username });
     if (!user) {
-      return res.status(404).json(
-        { 
-          message: "User not found" 
-        }
-      );
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(400).json(
-        { 
-          message: "Incorrect password" 
-        }
-      );
+      return res.status(400).json({
+        message: "Incorrect password",
+      });
     }
 
     const accessToken = generateAccessToken(user);
@@ -103,11 +94,9 @@ const loginUser = async (req, res) => {
     res.status(200).json({ user, accessToken, refreshToken });
   } catch (error) {
     console.error(error);
-    res.status(500).json(
-      { 
-        message: "Internal server error"
-      }
-    );
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
@@ -115,39 +104,36 @@ const refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      return res.status(400).json(
-        { 
-          message: "Refresh token required"
-        }
-      );
+      return res.status(400).json({
+        message: "Refresh token required",
+      });
     }
 
     const user = await UserModel.findOne({ refreshToken });
     if (!user) {
-      return res.status(403).json(
-        { 
-          message: "Invalid refresh token"
-        }
-      );
+      return res.status(403).json({
+        message: "Invalid refresh token",
+      });
     }
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, decoded) => {
-      if (err) return res.status(403).json(
-          {
-           message: "Invalid token" 
-          }
-        );
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, decoded) => {
+        if (err)
+          return res.status(403).json({
+            message: "Invalid token",
+          });
 
-      const newAccessToken = generateAccessToken(user);
-      res.status(200).json({ accessToken: newAccessToken });
-    });
+        const newAccessToken = generateAccessToken(user);
+        res.status(200).json({ accessToken: newAccessToken });
+      },
+    );
   } catch (error) {
     console.error(error);
-    res.status(500).json(
-      { 
-        message: "Internal server error"
-      }
-    );
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
