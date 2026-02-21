@@ -14,7 +14,7 @@ const isAdmin = async (req, res, next) => {
 
     token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECERT);
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const user = await userModel.findById(decoded.id);
 
     if (!user) {

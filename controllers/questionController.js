@@ -11,12 +11,12 @@ const getQuestions = async (req, res) => {
 
   try {
 
-    const isLastAnswered = await checkLastQuestionAnswered(id, difficultyLevel);
+    /*const isLastAnswered = await checkLastQuestionAnswered(id, difficultyLevel);
     if (!isLastAnswered) {
       return res.status(400).json({
         message: "Please answer the last question before getting a new one.",
       });
-    }
+    }*/
 
     const totalQuestions = await questionModel.countDocuments();
     if (totalQuestions === 0) {
