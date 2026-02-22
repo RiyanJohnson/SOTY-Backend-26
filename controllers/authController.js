@@ -25,9 +25,9 @@ const generateRefreshToken = (user) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { username, teamname, password, score } = req.body;
+    const { username, teamName, password, score } = req.body;
 
-    if (!username || !teamname || !password) {
+    if (!username || !teamName || !password) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -44,7 +44,7 @@ const registerUser = async (req, res) => {
 
     const newUser = new UserModel({
       username,
-      teamname,
+      teamName,
       password: hashedPassword,
       score: score || 0,
     });
